@@ -9,6 +9,8 @@ library(lmerTest)
 library(emmeans)
 library(datasets)
 library(broom)
+library(ggpubr)
+library(rstatix)
 
 data <- read.csv("Badanie_csv.csv")
 
@@ -41,7 +43,7 @@ obliczone <- data_r %>%
          LBQ_PBS=LBQ_2R+LBQ_8R+LBQ_11R+LBQ_13+LBQ_17+LBQ_20,
          LBQ_R=LBQ_4R+LBQ_6R+LBQ_9R+LBQ_15+LBQ_19+LBQ_21)
 df <- obliczone %>%
-  select(Sex, Age, Home, Degree, School, Position, Break, Retirement, CIPS_O, FMPS_O, FMPS_COM, FMPS_PS, FMPS_DAA,FMPS_PE,FMPS_PC, LBQ_O, LBQ_WPF, LBQ_BZR, LBQ_PBS, LBQ_R) %>%
+  select(Participant, Sex, Age, Home, Degree, School, Position, Break, Retirement, CIPS_O, FMPS_O, FMPS_COM, FMPS_PS, FMPS_DAA,FMPS_PE,FMPS_PC, LBQ_O, LBQ_WPF, LBQ_BZR, LBQ_PBS, LBQ_R) %>%
   filter(Break == "Nie" & Retirement == "Nie")
 
 #STAT OPISOWE
@@ -54,3 +56,70 @@ statop_sex <- df %>%
 statop_school <- df %>%
   group_by(School) %>%
   summarise(wiek=mean(Age), SD=sd(Age), ogolny_cips=mean(CIPS_O), ogolny_fmps=mean(FMPS_O), ogolny_lbq=mean(LBQ_O), N=n())
+
+df1 <- df %>%
+  group_by(School)
+
+shapiro.test(statop_school$ogolny_cips)
+shapiro.test(statop_school$ogolny_fmps)
+shapiro.test(statop_school$ogolny_lbq)
+
+wykres1 <- ggplot(data=df1) +
+  geom_boxplot(aes(x = School, y=CIPS_O))
+wykres2 <- ggplot(data=df1) +
+  geom_boxplot(aes(x = School, y=FMPS_O))
+wykres3 <- ggplot(data=df1) +
+  geom_boxplot(aes(x = School, y=LBQ_O))
+
+CIPS_AOV <- anova(lm(CIPS_O ~ School, data = df1))
+CIPS_AOV
+FMPS_AOV <- anova(lm(FMPS_O ~ School, data = df1))
+FMPS_AOV
+LBQ_AOV <- anova(lm(LBQ_O ~ School, data = df1))
+LBQ_AOV
+ggscatter(
+  df1, x = "CIPS_O", y = "FMPS_O",
+  color = "School", add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"), color = School)
+  )
+
+ggscatter(
+  df1, x = "FMPS_O", y = "CIPS_O",
+  add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
+  )
+df1 %>% anova_test(CIPS_O ~ School*FMPS_O)
+
+ggscatter(
+  df1, x = "FMPS_O", y = "LBQ_O",
+  add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
+  )
+ggscatter(
+  df1, x = "CIPS_O", y = "LBQ_O",
+  add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
+  )
+
+ggscatter(
+  df1, x = "CIPS_O", y = "LBQ_O",
+  color = "School", add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"), color = School)
+  )
+ggscatter(
+  df1, x = "FMPS_O", y = "LBQ_O",
+  color = "School", add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"), color = School)
+  )
