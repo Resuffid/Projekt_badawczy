@@ -77,6 +77,15 @@ FMPS_AOV <- anova(lm(FMPS_O ~ School, data = df1))
 FMPS_AOV
 LBQ_AOV <- anova(lm(LBQ_O ~ School, data = df1))
 LBQ_AOV
+res.aov <- aov(LBQ_O ~ School, data=df1)
+summary(res.aov)
+
+ggplot(data=df1, mapping = aes(x=School, y=CIPS_O)) +
+     geom_boxplot()+
+  geom_jitter()
+
+ggscatter(df1, x="School", y="CIPS_O", add="reg.line")
+
 ggscatter(
   df1, x = "CIPS_O", y = "FMPS_O",
   color = "School", add = "reg.line"
@@ -92,7 +101,6 @@ ggscatter(
   stat_regline_equation(
     aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
   )
-df1 %>% anova_test(CIPS_O ~ School*FMPS_O)
 
 ggscatter(
   df1, x = "FMPS_O", y = "LBQ_O",
@@ -123,3 +131,51 @@ ggscatter(
   stat_regline_equation(
     aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"), color = School)
   )
+
+df2 <- df %>% group_by(School) %>% get_summary_stats(FMPS_O)
+
+anova_test(data = df, formula = CIPS_O ~ FMPS_O + School, type = 3)
+anova_test(data = df, formula = FMPS_O ~ CIPS_O + School, type = 3)
+anova_test(data = df, formula = LBQ_O ~ FMPS_O + School, type = 3)
+anova_test(data = df, formula = CIPS_O ~ LBQ_O + School, type = 3)
+anova_test(data = df, formula = LBQ_O ~ CIPS_O + School, type = 3)
+anova_test(data = df, formula = FMPS_O ~ LBQ_O  + School, type = 3)
+
+manova_result <- manova(cbind(LBQ_O, CIPS_O, FMPS_O) ~ School, data = df)
+print(summary(manova_result))
+
+cor(x=df1$LBQ_O, y=df1$CIPS_O, method = "pearson")
+cor_test<-cor.test(x=df1$LBQ_O, y=df1$CIPS_O, method = "pearson")
+
+ggplot(df1, mapping = aes(x=CIPS_O, y=LBQ_O))+
+  geom_jitter()+
+  geom_smooth(method = "lm")
+fit.lbq <- lm(CIPS_O ~ LBQ_O, df1)
+summary(fit.lbq)
+plot(fit.lbq)
+
+cohen.d(df1$CIPS_O, df1$LBQ_O)
+
+t.test()
+
+cor_test<-cor.test(x=df1$LBQ_O, y=df1$FMPS_O, method = "pearson")
+
+ggplot(df1, mapping = aes(x=FMPS_O, y=LBQ_O))+
+  geom_jitter()+
+  geom_smooth(method = "lm")
+fit.fmpslbq <- lm(FMPS_O ~ LBQ_O, df1)
+summary(fit.fmpslbq)
+plot(fit.fmpslbq)
+
+cohen.d(df1$FMPS_O, df1$LBQ_O)
+
+covariance <- cov(df1$FMPS_O, df1$CIPS_O)
+
+cor.test(df1$FMPS_O, df1$CIPS_O)
+ggplot(df1, mapping = aes(x=FMPS_O, y=CIPS_O))+
+  geom_jitter()+
+  geom_smooth(method = "lm")
+fit.fmpscips <- lm(FMPS_O ~ CIPS_O, df1)
+summary(fit.fmpscips)
+plot(fit.fmpscips)
+Kowariancja <- (cor_test$estimate*sd(df1$CIPS_O)*sd(df1$FMPS_O))
