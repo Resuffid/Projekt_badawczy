@@ -11,6 +11,7 @@ library(datasets)
 library(broom)
 library(ggpubr)
 library(rstatix)
+library(gridExtra)
 
 data <- read.csv("Badanie_csv.csv")
 
@@ -55,7 +56,10 @@ statop_sex <- df %>%
   summarise(wiek=mean(Age), SD=sd(Age), ogolny_cips=mean(CIPS_O), ogolny_fmps=mean(FMPS_O), ogolny_lbq=mean(LBQ_O), N=n())
 statop_school <- df %>%
   group_by(School) %>%
-  summarise(wiek=mean(Age), SD=sd(Age), ogolny_cips=mean(CIPS_O), ogolny_fmps=mean(FMPS_O), ogolny_lbq=mean(LBQ_O), N=n())
+summarise(wiek=mean(Age), SD=sd(Age), M_CIPS=mean(CIPS_O), SD_CIPS=sd(CIPS_O), V_CIPS=((SD_CIPS/M_CIPS)*100), A_S_CIPS=skewness(CIPS_O), M_FMPS=mean(FMPS_O), SD_FMPS=sd(FMPS_O), V_FMPS=((SD_FMPS/M_FMPS)*100),A_S_FMPS=skewness(FMPS_O), M_LBQ=mean(LBQ_O), SD_LBQ=sd(LBQ_O), V_LBQ=((SD_LBQ/M_LBQ)*100),A_S_LBQ=skewness(LBQ_O), N=n())
+
+summarise(M_rt=mean(Time), SD_rt=sd(Time), V_x=((SD_rt/M_rt)*100), A_Sx=skewness(Time))
+
 
 df1 <- df %>%
   group_by(School)
@@ -102,7 +106,7 @@ ggscatter(
     aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
   )
 
-ggscatter(
+ ggscatter(
   df1, x = "FMPS_O", y = "LBQ_O",
   add = "reg.line"
 )+
@@ -179,3 +183,30 @@ fit.fmpscips <- lm(FMPS_O ~ CIPS_O, df1)
 summary(fit.fmpscips)
 plot(fit.fmpscips)
 Kowariancja <- (cor_test$estimate*sd(df1$CIPS_O)*sd(df1$FMPS_O))
+
+#HIST
+
+hist(df1$CIPS_O)
+hist(df1$FMPS_O)
+hist(df1$LBQ_O)
+shapiro.test(df1$CIPS_O)
+shapiro.test(df1$FMPS_O)
+shapiro.test(df1$LBQ_O)
+
+p1 <- ggplot(data=df1, aes(x=CIPS_O)) +
+  geom_histogram(binwidth = 5, fill="lightpink", color="black") +
+  geom_vline(aes(xintercept=mean(CIPS_O)),
+             color="blue", linetype="dashed", size=1) +
+  labs(title="Histogram of CIPS score", x="CIPS score", y="Frequency")
+p2 <- ggplot(data=df1, aes(x=FMPS_O)) +
+  geom_histogram(binwidth = 5, fill="lightpink", color="black") +
+  geom_vline(aes(xintercept=mean(FMPS_O)),
+             color="blue", linetype="dashed", size=1) +
+  labs(title="Histogram of FMPS score", x="FMPS score", y="Frequency")
+p3 <- ggplot(data=df1, aes(x=LBQ_O)) +
+  geom_histogram(binwidth = 5, fill="lightpink", color="black") +
+  geom_vline(aes(xintercept=mean(LBQ_O)),
+             color="blue", linetype="dashed", size=1) +
+  labs(title="Histogram of LBQ score", x="LBQ score", y="Frequency")
+
+combined_hist <- grid.arrange(p1, p2, p3, ncol=3)
