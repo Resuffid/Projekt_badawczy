@@ -12,6 +12,7 @@ library(broom)
 library(ggpubr)
 library(rstatix)
 library(gridExtra)
+library(multcompView)
 
 data <- read.csv("Badanie_csv.csv")
 
@@ -83,6 +84,12 @@ LBQ_AOV <- anova(lm(LBQ_O ~ School, data = df1))
 LBQ_AOV
 res.aov <- aov(LBQ_O ~ School, data=df1)
 summary(res.aov)
+
+res.cips <- aov(CIPS_O ~ School, data=df1)
+
+Tukeytest <- TukeyHSD(res.cips)
+
+plot(Tukeytest)
 
 ggplot(data=df1, mapping = aes(x=School, y=CIPS_O)) +
      geom_boxplot()+
