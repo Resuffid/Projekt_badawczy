@@ -106,7 +106,7 @@ ggscatter(
   )
 
 ggscatter(
-  df1, x = "FMPS_O", y = "CIPS_O",
+  df1, x = "FMPS_O", y = "CIPS_O", add.params = list(color = "magenta"), xlab = "FMPS Score", ylab = "CIPS Score", title = "Correlation Between Impostor Syndrome and Perfectionism",
   add = "reg.line"
 )+
   stat_regline_equation(
@@ -114,14 +114,38 @@ ggscatter(
   )
 
  ggscatter(
-  df1, x = "FMPS_O", y = "LBQ_O",
+  df1, x = "FMPS_O", y = "LBQ_O", add.params = list(color = "magenta"), xlab = "FMPS Score", ylab = "LBQ Score", title = "Correlation Between Perfectionism and Professional Burnout",
   add = "reg.line"
 )+
   stat_regline_equation(
     aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
   )
 ggscatter(
-  df1, x = "CIPS_O", y = "LBQ_O",
+  df1, x = "CIPS_O", y = "LBQ_O", add.params = list(color = "magenta"), xlab = "CIPS Score", ylab = "LBQ Score", title = "Correlation Between Impostor Syndrome and Professional Burnout",
+  add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
+  )
+
+ggscatter(
+  df1, x = "Age", y = "LBQ_O", add.params = list(color = "magenta"), xlab = "Age", ylab = "LBQ Score", title = "Correlation Between Age and Professional Burnout",
+  add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
+  )
+
+ggscatter(
+  df1, x = "Age", y = "CIPS_O", add.params = list(color = "magenta"), xlab = "Age", ylab = "CIPS Score", title = "Correlation Between Age and Impostor Syndrome",
+  add = "reg.line"
+)+
+  stat_regline_equation(
+    aes(label =  paste(..eq.label.., ..rr.label.., sep = "~~~~"))
+  )
+
+ggscatter(
+  df1, x = "Age", y = "FMPS_O", add.params = list(color = "magenta"), xlab = "Age", ylab = "FMPS Score", title = "Correlation Between Age and Perfectionism",
   add = "reg.line"
 )+
   stat_regline_equation(
@@ -217,3 +241,9 @@ p3 <- ggplot(data=df1, aes(x=LBQ_O)) +
   labs(title="Histogram of LBQ score", x="LBQ score", y="Frequency")
 
 combined_hist <- grid.arrange(p1, p2, p3, ncol=3)
+
+
+cor.test(df1$Age, df1$LBQ_O, method="pearson")
+cor.test(df1$Age, df1$FMPS_O, method="pearson")
+cor.test(df1$Age, df1$CIPS_O, method="pearson")
+         
