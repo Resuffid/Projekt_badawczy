@@ -19,18 +19,18 @@ data <- read.csv("Badanie_csv.csv")
 #CZYSZCZENIE BAZY
 
 data_r <- data%>%
-  mutate(LBQ_2R = 6-LBQ_2,
-         LBQ_4R = 6-LBQ_4,
-         LBQ_6R = 6-LBQ_6,
-         LBQ_8R = 6-LBQ_8,
-         LBQ_9R = 6-LBQ_9,
-         LBQ_11R = 6-LBQ_11,
-         LBQ_14R = 6-LBQ_14,
-         LBQ_16R = 6-LBQ_16,
-         LBQ_18R = 6-LBQ_18,
-         LBQ_22R = 6-LBQ_22,
-         LBQ_23R = 6-LBQ_23,
-         LBQ_24R = 6-LBQ_24)
+  mutate(LBQ_2R = 7-LBQ_2,
+         LBQ_4R = 7-LBQ_4,
+         LBQ_6R = 7-LBQ_6,
+         LBQ_8R = 7-LBQ_8,
+         LBQ_9R = 7-LBQ_9,
+         LBQ_11R = 7-LBQ_11,
+         LBQ_14R = 7-LBQ_14,
+         LBQ_16R = 7-LBQ_16,
+         LBQ_18R = 7-LBQ_18,
+         LBQ_22R = 7-LBQ_22,
+         LBQ_23R = 7-LBQ_23,
+         LBQ_24R = 7-LBQ_24)
 obliczone <- data_r %>%
   mutate(CIPS_O = CIPS_1+CIPS_2+CIPS_3+CIPS_4+CIPS_5+CIPS_6+CIPS_7+CIPS_8+CIPS_9+CIPS_10+CIPS_11+CIPS_12+CIPS_13+CIPS_14+CIPS_15+CIPS_16+CIPS_17+CIPS_18+CIPS_19+CIPS_20,
          FMPS_O = FMPS_1+FMPS_2+FMPS_3+FMPS_4+FMPS_5+FMPS_6+FMPS_7+FMPS_8+FMPS_9+FMPS_10+FMPS_11+FMPS_12+FMPS_13+FMPS_14+FMPS_15+FMPS_16+FMPS_17+FMPS_18+FMPS_19+FMPS_20+FMPS_21+FMPS_22+FMPS_23+FMPS_24+FMPS_25+FMPS_26+FMPS_27+FMPS_28+FMPS_29,
@@ -93,7 +93,8 @@ plot(Tukeytest)
 
 ggplot(data=df1, mapping = aes(x=School, y=CIPS_O)) +
      geom_boxplot()+
-  geom_jitter()
+  geom_jitter(color="magenta") +
+  labs(x="School type", y="CIPS Score")
 
 ggscatter(df1, x="School", y="CIPS_O", add="reg.line")
 
@@ -246,4 +247,60 @@ combined_hist <- grid.arrange(p1, p2, p3, ncol=3)
 cor.test(df1$Age, df1$LBQ_O, method="pearson")
 cor.test(df1$Age, df1$FMPS_O, method="pearson")
 cor.test(df1$Age, df1$CIPS_O, method="pearson")
-         
+
+dfS <- df %>%
+  mutate(LBQ_WPF_S = case_when(LBQ_WPF==6|LBQ_WPF==7 ~ 1,
+                               LBQ_WPF==8 ~ 2,
+                               LBQ_WPF==9 ~ 3,
+                               LBQ_WPF==10|LBQ_WPF==11 ~ 4,
+                               LBQ_WPF==12|LBQ_WPF==13|LBQ_WPF==14 ~ 5,
+                               LBQ_WPF==15|LBQ_WPF==16|LBQ_WPF==17|LBQ_WPF==18 ~ 6,
+                               LBQ_WPF==19|LBQ_WPF==20|LBQ_WPF==21 ~ 7,
+                               LBQ_WPF==22|LBQ_WPF==23|LBQ_WPF==24 ~ 8,
+                               LBQ_WPF==25|LBQ_WPF==26 ~ 9,
+                               LBQ_WPF==27|LBQ_WPF==28|LBQ_WPF==29|LBQ_WPF==30|LBQ_WPF==31|LBQ_WPF==32|LBQ_WPF==33|LBQ_WPF==34|LBQ_WPF==35|LBQ_WPF==36 ~ 10))%>%
+  mutate(LBQ_BZR_S = case_when(LBQ_BZR==6|LBQ_BZR==7 ~ 1,
+                                LBQ_BZR==8 ~ 2,
+                                LBQ_BZR==9|LBQ_BZR==10 ~ 3,
+                                LBQ_BZR==11|LBQ_BZR==12 ~ 4,
+                                LBQ_BZR==13|LBQ_BZR==14 ~ 5,
+                                LBQ_BZR==15|LBQ_BZR==16|LBQ_BZR==17 ~ 6,
+                                LBQ_BZR==18|LBQ_BZR==19 ~ 7,
+                                LBQ_BZR==20|LBQ_BZR==21|LBQ_BZR==22|LBQ_BZR==23|LBQ_BZR==24 ~ 8,
+                                LBQ_BZR==25|LBQ_BZR==26|LBQ_BZR==27|LBQ_BZR==28|LBQ_BZR==29 ~ 9,
+                                LBQ_BZR==30|LBQ_BZR==31|LBQ_BZR==32|LBQ_BZR==33|LBQ_BZR==34|LBQ_BZR==35|LBQ_BZR==36 ~ 10))%>%
+  mutate(LBQ_PBS_S = case_when(LBQ_PBS==6 ~ 1,
+                               LBQ_PBS==7 ~ 2,
+                               LBQ_PBS==8 ~ 3,
+                               LBQ_PBS==9|LBQ_PBS==10 ~ 4,
+                               LBQ_PBS==11|LBQ_PBS==12 ~ 5,
+                               LBQ_PBS==13|LBQ_PBS==14 ~ 6,
+                               LBQ_PBS==15|LBQ_PBS==16|LBQ_PBS==17 ~ 7,
+                               LBQ_PBS==18|LBQ_PBS==19 ~ 8,
+                               LBQ_PBS==20|LBQ_PBS==21|LBQ_PBS==22 ~ 9,
+                               LBQ_PBS==23|LBQ_PBS==24|LBQ_PBS==25|LBQ_PBS==26|LBQ_PBS==27|LBQ_PBS==28|LBQ_PBS==29|LBQ_PBS==30|LBQ_PBS==31|LBQ_PBS==32|LBQ_PBS==33|LBQ_PBS==34|LBQ_PBS==35|LBQ_PBS==36 ~ 10))%>%
+  mutate(LBQ_R_S = case_when(LBQ_R==6 ~ 2,
+                             LBQ_R==7 ~ 3,
+                             LBQ_R==8|LBQ_R==9 ~ 4,
+                             LBQ_R==10|LBQ_R==11|LBQ_R==12 ~ 5,
+                             LBQ_R==13|LBQ_R==14|LBQ_R==15|LBQ_R==16 ~ 6,
+                             LBQ_R==17|LBQ_R==18|LBQ_R==19|LBQ_R==20 ~ 7,
+                             LBQ_R==21|LBQ_R==22 ~ 8,
+                             LBQ_R==23|LBQ_R==24|LBQ_R==25|LBQ_R==26 ~ 9,
+                             LBQ_R==27|LBQ_R==28|LBQ_R==29|LBQ_R==30|LBQ_R==31|LBQ_R==32|LBQ_R==33|LBQ_R==34|LBQ_R==35|LBQ_R==36 ~ 10))
+
+Wypalenie <- dfS %>%
+  select(Age,School,LBQ_WPF_S,LBQ_BZR_S,LBQ_PBS_S,LBQ_R_S)%>%
+  cbind(n=1)%>%
+  mutate(LBQ_S_M = ((LBQ_BZR_S+LBQ_R_S+LBQ_WPF_S+LBQ_PBS_S)/4))
+
+Wypalenie_school <- Wypalenie%>%
+  group_by(School)%>%
+  summarise(Mwpf=mean(LBQ_WPF_S), Mbzr=mean(LBQ_BZR_S), Mpbs=mean(LBQ_PBS_S), Mr=mean(LBQ_R_S), Msm=mean(LBQ_S_M))
+
+Wypalenie_liczba <- Wypalenie%>%
+  group_by(School)%>%
+  filter(LBQ_S_M>=8) %>%
+  summarize(Liczba_Wypalonych = n())
+        
+procent_wyp <- (Wypalenie_liczba$Liczba_Wypalonych/df2$n)*100
